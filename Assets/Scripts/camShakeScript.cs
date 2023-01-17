@@ -22,7 +22,6 @@ public class camShakeScript : MonoBehaviour
             float xPos = Random.Range(-.1f, .1f)*camShakeStrength;
             float zPos = Random.Range(-.1f, .1f)*camShakeStrength;
             Vector3 newPos = new Vector3(transform.position.x + xPos, transform.position.y, transform.position.z + zPos);
-            //Vector3 newPos = endPoint + originalPos;
             transform.position = Vector3.Lerp(transform.position,newPos,0.15f);
             timePassed += Time.deltaTime;
             yield return new WaitForEndOfFrame();

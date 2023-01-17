@@ -5,13 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class gameSceneManager : MonoBehaviour
 {
-    //This was just used to load menu stuff properly and change scenes
     
     public Canvas mainCanvas;
     public Canvas helpCanvas;
     public Canvas helpCanvas2;
     public Canvas introCanvas;
-    // Start is called before the first frame update
     public void loadMainMenu()
     {
         SceneManager.LoadScene("firstLevel");

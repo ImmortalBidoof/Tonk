@@ -10,23 +10,18 @@ public class UnitScript : MonoBehaviour
     public int x;
     public int y;
 
-    //This is a low tier idea, don't use it 
     public bool coroutineRunning;
 
-    //Meta defining play here
     public Queue<int> movementQueue;
     public Queue<int> combatQueue;
-    //This global variable is used to increase the units movementSpeed when travelling on the board
     public float visualMovementSpeed = .15f;
 
-    //Animator
     public Animator animator;
 
 
     public GameObject tileBeingOccupied;
 
     public GameObject damagedParticle;
-    //UnitStats
     public string unitName;
     public int moveSpeed = 2;    
     public int attackRange = 1;
@@ -36,7 +31,6 @@ public class UnitScript : MonoBehaviour
     public Sprite unitSprite;
 
     [Header("UI Elements")]
-    //Unity UI References
     public Canvas healthBarCanvas;
     public TMP_Text hitPointsText;
     public Image healthBar;
@@ -45,30 +39,21 @@ public class UnitScript : MonoBehaviour
     public TMP_Text damagePopupText;
     public Image damageBackdrop;
     
-
-    //This may change in the future if 2d sprites are used instead
     public Material unitMaterial;
     public Material unitWaitMaterial;
 
     public tileMapScript map;
 
-    //Location for positional update
     public Transform startPoint;
     public Transform endPoint;
     public float moveSpeedTime = 1f;
     
-    //3D Model or 2D Sprite variables to check which version to use
-    //Make sure only one of them are enabled in the inspector
     //public GameObject holder3D;
     public GameObject holder2D;
-    // Total distance between the markers.
     private float journeyLength;
 
-    //Boolean to startTravelling
     public bool unitInMovement;
 
-
-    //Enum for unit states
     public enum movementStates
     {
         Unselected,
@@ -77,43 +62,30 @@ public class UnitScript : MonoBehaviour
         Wait
     }
     public movementStates unitMoveState;
-   
-    //Pathfinding
 
     public List<Node> path = null;
 
-    //Path for moving unit's transform
     public List<Node> pathForMovement = null;
     public bool completedMovement = false;
 
     public GameObject deathExplosion;
-    //deathExplosion de;
 
     private void Awake()
     {
-
-
         animator = holder2D.GetComponent<Animator>();
         movementQueue = new Queue<int>();
         combatQueue = new Queue<int>();
-       
-        
+               
         x = (int)transform.position.x;
         y = (int)transform.position.z;
         unitMoveState = movementStates.Unselected;
         currentHealthPoints = maxHealthPoints;
         hitPointsText.SetText(currentHealthPoints.ToString());
-
-        //de = deathExplosion.GetComponent<deathExplosion>();
     }
-
     public void LateUpdate()
     {
         healthBarCanvas.transform.forward = Camera.main.transform.forward;
-        //damagePopupCanvas.transform.forward = Camera.main.transform.forward;
-        //holder2D.transform.forward = Camera.main.transform.forward;
     }
-
     public void MoveNextTile()
     {
         if (path.Count == 0)
@@ -123,18 +95,13 @@ public class UnitScript : MonoBehaviour
         else
         {
             StartCoroutine(moveOverSeconds(transform.gameObject, path[path.Count - 1]));
-        }
-        
+        }        
      }
-
-   
     public void moveAgain()
-    {
-        
+    {        
         path = null;
         setMovementState(0);
         completedMovement = false;
-        //gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         gameObject.GetComponentInChildren<Renderer>().material = unitMaterial;
         setIdleAnimation();
     }
@@ -156,8 +123,7 @@ public class UnitScript : MonoBehaviour
         {
             return movementStates.Wait;
         }
-        return movementStates.Unselected;
-        
+        return movementStates.Unselected;        
     }
     public void setMovementState(int i)
     {
@@ -176,9 +142,7 @@ public class UnitScript : MonoBehaviour
         else if (i == 3)
         {
             unitMoveState = movementStates.Wait;
-        }
-       
-
+        }       
     }
     public void updateHealthUI()
     {
@@ -192,8 +156,6 @@ public class UnitScript : MonoBehaviour
     }
     public void wait()
     {
-
-        //gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.gray;
         gameObject.GetComponentInChildren<Renderer>().material = unitWaitMaterial;
     }
     public void changeHealthBarColour(int i)
@@ -203,8 +165,7 @@ public class UnitScript : MonoBehaviour
             healthBar.color = Color.blue;
         }
         else if (i == 1)
-        {
-           
+        {           
             healthBar.color = Color.red;
         }
     }
@@ -213,43 +174,22 @@ public class UnitScript : MonoBehaviour
         if (holder2D.activeSelf)
         {
             StartCoroutine(fadeOut());
-            StartCoroutine(checkIfRoutinesRunning());
-           
+            StartCoroutine(checkIfRoutinesRunning());           
         }
-       
-        //Destroy(gameObject,2f);
-        /*
-        Renderer rend = GetComponentInChildren<SpriteRenderer>();
-        Color c = rend.material.color;
-        c.a = 0f;
-        rend.material.color = c;
-        StartCoroutine(fadeOut(rend));*/
-       
     }
     public IEnumerator checkIfRoutinesRunning()
     {
         while (combatQueue.Count>0)
-        {
-          
+        {          
             yield return new WaitForEndOfFrame();
-        }
-        
+        }        
         Destroy(gameObject);
-
     }    
     public IEnumerator fadeOut()
     {
-
         combatQueue.Enqueue(1);
-        //setDieAnimation();
-        //yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        //put some death animation
-
         ParticleSystem ps = deathExplosion.GetComponent<ParticleSystem>();
         ps.Play();
-        //deathExplosion.enableEmission = true;
-        //de.startExplosion();
-
         Renderer rend = GetComponentInChildren<MeshRenderer>();
         
         for (float f = 1f; f >= .05; f -= 0.01f)
@@ -260,29 +200,20 @@ public class UnitScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        //deathExplosion.Stop();
-        //deathExplosion.enableEmission = false;
-        combatQueue.Dequeue();
-       
-
+        combatQueue.Dequeue();       
     }
     public IEnumerator moveOverSeconds(GameObject objectToMove,Node endNode)
     {
         movementQueue.Enqueue(1);
 
-        //remove first thing on path because, its the tile we are standing on
-        
         path.RemoveAt(0);
         while (path.Count != 0)
-        {
-            
+        {            
             Vector3 endPos = map.tileCoordToWorldCoord(path[0].x, path[0].y);
             objectToMove.transform.position = Vector3.Lerp(transform.position, endPos, visualMovementSpeed);
             if ((transform.position - endPos).sqrMagnitude < 0.001)
             {
-
-                path.RemoveAt(0);
-              
+                path.RemoveAt(0);              
             }
             yield return new WaitForEndOfFrame();
         }
@@ -294,14 +225,9 @@ public class UnitScript : MonoBehaviour
         tileBeingOccupied.GetComponent<ClickableTileScript>().unitOnTile = null;
         tileBeingOccupied = map.tilesOnMap[x, y];
         movementQueue.Dequeue();
-
     }
-
-
-
     public IEnumerator displayDamageEnum(int damageTaken)
     {
-
         combatQueue.Enqueue(1);
        
         damagePopupText.SetText(damageTaken.ToString());
@@ -319,7 +245,6 @@ public class UnitScript : MonoBehaviour
            yield return new WaitForEndOfFrame();
         }
 
-        //damagePopup.enabled = false;
         combatQueue.Dequeue();
        
     }

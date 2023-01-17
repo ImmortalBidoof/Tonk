@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class intro : MonoBehaviour
 {
     public Canvas displayIntroUI;
-    // Start is called before the first frame update
     public void Start()
     {
         displayIntroUI.enabled = true;
